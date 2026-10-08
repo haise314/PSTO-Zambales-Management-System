@@ -33,7 +33,8 @@ export function AuthProvider({ children }) {
       can: (tab, action) => isAdmin || !!profile?.permissions?.[tab]?.[action],
       async login(username, password) {
         const { error } = await supabase.auth.signInWithPassword({ email: emailFor(username), password })
-        return error ? 'Invalid username/password or account is disabled.' : ''
+        if (error) console.error('Login error:', error)
+        return error ? `${error.message} (${error.status || 'no status'})` : ''
       },
       logout: () => supabase.auth.signOut(),
       reload: () => loadProfile(profile?.id),
